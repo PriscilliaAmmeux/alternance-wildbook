@@ -1,5 +1,7 @@
 import { useQuery, gql } from "@apollo/client";
 import Wilder, { WilderProps } from "./components/Wilder";
+import AddGradeForm from "./components/AddGradeForm";
+import AddWilderForm from "./components/AddWilderForm";
 import "./App.css";
 
 export interface SkillApi {
@@ -16,20 +18,6 @@ export interface WilderApi {
   grades: GradeApi[];
 }
 
-const GET_WILDERS = gql`
-  query GetWilders {
-    wilders {
-      name
-      grades {
-        grade
-        skill {
-          name
-        }
-      }
-    }
-  }
-`;
-
 const formatWildersFromApi = (wilders: WilderApi[]): WilderProps[] =>
   wilders.map((wilder) => {
     return {
@@ -41,8 +29,28 @@ const formatWildersFromApi = (wilders: WilderApi[]): WilderProps[] =>
     };
   });
 
+export const GET_WILDERS_AND_SKILLS = gql`
+  query GetWildersAndSkills {
+    wilders {
+      id
+      name
+      grades {
+        grade
+        skill {
+          id
+          name
+        }
+      }
+    }
+    getAllSkills {
+      id
+      name
+    }
+  }
+`;
+
 export default function App() {
-  const { loading, error, data } = useQuery(GET_WILDERS);
+  const { loading, error, data } = useQuery(GET_WILDERS_AND_SKILLS);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error : {error.message}</p>;
@@ -58,6 +66,8 @@ export default function App() {
         </div>
       </header>
       <main className="container">
+        <AddGradeForm />
+        <AddWilderForm />
         <h2>Wilders</h2>
         <div className="addform"></div>
         <section className="card-row">
